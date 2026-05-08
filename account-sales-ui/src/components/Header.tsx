@@ -3,9 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 interface HeaderProps {
   toggleTheme: () => void;
   currentTheme: string;
+  cartCount?: number;
+  onCartClick?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ toggleTheme, currentTheme }) => {
+const Header: React.FC<HeaderProps> = ({ toggleTheme, currentTheme, cartCount = 0, onCartClick }) => {
   const location = useLocation();
 
   return (
@@ -30,9 +32,9 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme, currentTheme }) => {
                 <button className="icon-btn theme-toggle" onClick={toggleTheme}>
                     <i className={`fa-solid ${currentTheme === 'dark' ? 'fa-sun' : 'fa-moon'}`}></i>
                 </button>
-                <button className="icon-btn cart-btn">
+                <button className="icon-btn cart-btn" onClick={onCartClick}>
                     <i className="fa-solid fa-shopping-cart"></i>
-                    <span className="badge">0</span>
+                    {cartCount > 0 && <span className="badge">{cartCount}</span>}
                 </button>
                 <Link to="/login" className="btn btn-primary login-btn">Đăng nhập</Link>
             </div>

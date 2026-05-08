@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const mockPosts = [
   {
@@ -133,7 +134,7 @@ const BlogPage: React.FC = () => {
                         <span><i className="fa-regular fa-calendar"></i> {post.date}</span>
                         <span><i className="fa-regular fa-eye"></i> {post.views}</span>
                     </div>
-                    <h3><a href="#">{post.title}</a></h3>
+                    <h3><Link to={`/blog/${post.id}`}>{post.title}</Link></h3>
                     <p>{post.excerpt}</p>
                     
                     <div className="blog-author">

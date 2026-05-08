@@ -52,9 +52,10 @@ const products = [
 
 interface ProductGridProps {
   onBuy: (product: any) => void;
+  onAddToCart?: (product: any) => void;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({ onBuy }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({ onBuy, onAddToCart }) => {
   const [filter, setFilter] = useState('all');
 
   const filteredProducts = filter === 'all' 
@@ -97,7 +98,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onBuy }) => {
                                 <span className="old-price">{product.oldPrice}</span>
                                 <span className="current-price">{product.price}<small>/tháng</small></span>
                             </div>
-                            <button className="btn btn-primary w-100 buy-btn" onClick={() => onBuy(product)}>Mua Ngay</button>
+                            <div className="card-actions">
+                                <button className="btn-icon-outline" onClick={() => onAddToCart && onAddToCart(product)} title="Thêm vào giỏ hàng">
+                                    <i className="fa-solid fa-cart-plus"></i>
+                                </button>
+                                <button className="btn btn-primary buy-btn" onClick={() => onBuy(product)}>Mua Ngay</button>
+                            </div>
                         </div>
                     </div>
                 ))}

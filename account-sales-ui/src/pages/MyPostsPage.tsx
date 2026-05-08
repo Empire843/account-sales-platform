@@ -99,7 +99,7 @@ const MyPostsPage: React.FC = () => {
                                         <td>
                                             <div className="action-btns">
                                                 {post.status === 'Đã xuất bản' && (
-                                                    <Link to="#" className="action-btn" title="Xem bài viết">
+                                                    <Link to={`/blog/${post.id}`} className="action-btn" title="Xem bài viết">
                                                         <i className="fa-solid fa-eye"></i>
                                                     </Link>
                                                 )}
