@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: account-sales-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: account_sales
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    networks:
+      - app-network
+  # api:
+  #   build:
+  #     context: ./account-sales-api
+  #     dockerfile: Dockerfile
+  #   container_name: account-sales-api
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/account_sales
+  #     - SPRING_DATASOURCE_USERNAME=admin
+  #     - SPRING_DATASOURCE_PASSWORD=password
+  #     - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - app-network
+  # ui:
+  #   build:
+  #     context: ./account-sales-ui
+  #     dockerfile: Dockerfile
+  #   container_name: account-sales-ui
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - api
+  #   networks:
+  #     - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    driver: bridge

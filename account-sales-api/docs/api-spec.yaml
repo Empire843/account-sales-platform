@@ -1,0 +1,915 @@
+openapi: 3.0.3
+info:
+  title: ProAccounts API
+  description: |
+    REST API cho nền tảng bán tài khoản kỹ thuật số tự động ProAccounts.
+    
+    ## Luồng hoạt động chính:
+    1. Khách hàng xem danh sách sản phẩm → `GET /api/products`
+    2. Khách hàng tạo đơn hàng → `POST /api/orders`
+    3. Hệ thống sinh QR code / nội dung chuyển khoản
+    4. Ngân hàng gọi webhook xác nhận → `POST /api/webhooks/payment`
+    5. Hệ thống tự động cấp tài khoản từ kho → Trả về cho khách hàng
+    
+    ## Xác thực (Authentication):
+    - **Public API**: Không cần xác thực (xem sản phẩm, tạo đơn hàng)
+    - **Admin API**: Yêu cầu JWT Bearer Token (`Authorization: Bearer <token>`)
+    - **Webhook API**: Xác thực bằng API Key header (`X-API-Key`)
+  version: 1.0.0
+  contact:
+    name: ProAccounts Support
+    email: support@proaccounts.vn
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development
+  - url: https://api.proaccounts.vn
+    description: Production
+
+tags:
+  - name: Auth
+    description: Đăng ký, đăng nhập, quản lý phiên
+  - name: Products
+    description: Quản lý sản phẩm (Public + Admin)
+  - name: Orders
+    description: Quản lý đơn hàng
+  - name: Inventory
+    description: Quản lý kho tài khoản (Admin only)
+  - name: Webhooks
+    description: Nhận thông báo thanh toán từ bên thứ 3
+  - name: Admin - Dashboard
+    description: Thống kê & báo cáo cho Admin
+
+# ============================================================
+# PATHS
+# ============================================================
+paths:
+
+  # ===================== AUTH =====================
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Đăng ký tài khoản mới
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Email đã tồn tại hoặc dữ liệu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Đăng nhập
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Email hoặc mật khẩu không đúng
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Lấy thông tin user hiện tại
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Thông tin user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  # ===================== PRODUCTS (Public) =====================
+  /api/products:
+    get:
+      tags: [Products]
+      summary: Lấy danh sách sản phẩm (có phân trang, lọc, sắp xếp)
+      operationId: getProducts
+      parameters:
+        - name: page
+          in: query
+          description: Số trang (bắt đầu từ 0)
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Số sản phẩm mỗi trang
+          schema:
+            type: integer
+            default: 12
+        - name: category
+          in: query
+          description: Lọc theo danh mục (ai, dev, design)
+          schema:
+            type: string
+            enum: [ai, dev, design]
+        - name: search
+          in: query
+          description: Tìm kiếm theo tên sản phẩm
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: Sắp xếp
+          schema:
+            type: string
+            enum: [price_asc, price_desc, newest, bestseller]
+            default: newest
+        - name: status
+          in: query
+          description: Trạng thái (chỉ Admin dùng)
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE, OUT_OF_STOCK]
+      responses:
+        '200':
+          description: Danh sách sản phẩm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPageResponse'
+
+  /api/products/{id}:
+    get:
+      tags: [Products]
+      summary: Lấy chi tiết 1 sản phẩm
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Chi tiết sản phẩm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Không tìm thấy sản phẩm
+
+  # ===================== PRODUCTS (Admin) =====================
+  /api/admin/products:
+    post:
+      tags: [Products]
+      summary: "[Admin] Tạo sản phẩm mới"
+      operationId: createProduct
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '201':
+          description: Tạo sản phẩm thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+
+  /api/admin/products/{id}:
+    put:
+      tags: [Products]
+      summary: "[Admin] Cập nhật sản phẩm"
+      operationId: updateProduct
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+    delete:
+      tags: [Products]
+      summary: "[Admin] Xóa sản phẩm (soft delete)"
+      operationId: deleteProduct
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Xóa thành công
+
+  # ===================== ORDERS =====================
+  /api/orders:
+    post:
+      tags: [Orders]
+      summary: Tạo đơn hàng mới (Khách hàng bấm "Mua Ngay")
+      description: |
+        Tạo đơn hàng ở trạng thái PENDING.
+        Trả về thông tin thanh toán (bank info, nội dung CK, QR code URL).
+        Frontend hiển thị popup thanh toán dựa trên response này.
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '201':
+          description: Đơn hàng đã tạo, chờ thanh toán
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCreateResponse'
+        '400':
+          description: Sản phẩm hết hàng hoặc dữ liệu không hợp lệ
+
+  /api/orders/{orderCode}:
+    get:
+      tags: [Orders]
+      summary: Kiểm tra trạng thái đơn hàng (dùng cho Polling)
+      description: |
+        Frontend gọi endpoint này mỗi 3-5 giây sau khi tạo đơn hàng
+        để kiểm tra xem thanh toán đã được xác nhận chưa.
+        Khi status = SUCCESS, response sẽ chứa thông tin tài khoản đã cấp.
+      operationId: getOrderStatus
+      parameters:
+        - name: orderCode
+          in: path
+          required: true
+          description: Mã đơn hàng (ví dụ PAY_PRO_abc123)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Trạng thái đơn hàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatusResponse'
+        '404':
+          description: Không tìm thấy đơn hàng
+
+  # ===================== ORDERS (Admin) =====================
+  /api/admin/orders:
+    get:
+      tags: [Orders]
+      summary: "[Admin] Lấy danh sách tất cả đơn hàng"
+      operationId: getAllOrders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, SUCCESS, EXPIRED, REFUNDED]
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Danh sách đơn hàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPageResponse'
+
+  # ===================== INVENTORY (Admin) =====================
+  /api/admin/inventory/{productId}:
+    get:
+      tags: [Inventory]
+      summary: "[Admin] Xem kho tài khoản của 1 sản phẩm"
+      operationId: getInventory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: status
+          in: query
+          description: Lọc theo trạng thái
+          schema:
+            type: string
+            enum: [AVAILABLE, SOLD, RESERVED]
+      responses:
+        '200':
+          description: Danh sách tài khoản trong kho
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryListResponse'
+
+  /api/admin/inventory/{productId}/import:
+    post:
+      tags: [Inventory]
+      summary: "[Admin] Nhập tài khoản vào kho (bulk import)"
+      description: |
+        Nhập danh sách tài khoản (email|password hoặc license key)
+        vào kho cho 1 sản phẩm cụ thể.
+      operationId: importInventory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryImportRequest'
+      responses:
+        '201':
+          description: Nhập kho thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryImportResponse'
+
+  # ===================== WEBHOOK =====================
+  /api/webhooks/payment:
+    post:
+      tags: [Webhooks]
+      summary: Nhận webhook thanh toán từ ngân hàng/cổng TT
+      description: |
+        Endpoint này nhận thông báo biến động số dư từ SePay/Casso/Ngân hàng.
+        Quy trình:
+        1. Xác thực API Key
+        2. Parse nội dung chuyển khoản → tìm Order tương ứng
+        3. So khớp số tiền
+        4. Nếu khớp: Đổi Order → SUCCESS, cấp phát tài khoản từ inventory
+        5. Gửi email thông báo cho khách hàng
+      operationId: handlePaymentWebhook
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentWebhookPayload'
+      responses:
+        '200':
+          description: Webhook xử lý thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: API Key không hợp lệ
+
+  # ===================== DASHBOARD (Admin) =====================
+  /api/admin/dashboard/stats:
+    get:
+      tags: [Admin - Dashboard]
+      summary: "[Admin] Lấy thống kê tổng quan"
+      operationId: getDashboardStats
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Thống kê tổng quan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+# ============================================================
+# COMPONENTS
+# ============================================================
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token từ endpoint /api/auth/login
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API Key dành cho webhook từ cổng thanh toán
+
+  schemas:
+
+    # ---- Auth ----
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          minLength: 6
+          example: "mypassword123"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          example: "mypassword123"
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+          example: "eyJhbGciOiJIUzI1NiJ9..."
+        tokenType:
+          type: string
+          example: "Bearer"
+        expiresIn:
+          type: integer
+          description: Thời gian hết hạn (giây)
+          example: 86400
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [USER, ADMIN]
+        createdAt:
+          type: string
+          format: date-time
+
+    # ---- Products ----
+    ProductCreateRequest:
+      type: object
+      required: [name, description, price, category]
+      properties:
+        name:
+          type: string
+          example: "Claude 3.5 Sonnet Pro"
+        description:
+          type: string
+          example: "Trải nghiệm AI mạnh mẽ nhất cho lập trình."
+        price:
+          type: number
+          format: double
+          example: 299000
+        originalPrice:
+          type: number
+          format: double
+          description: Giá gốc (để hiển thị gạch ngang)
+          example: 500000
+        category:
+          type: string
+          enum: [ai, dev, design]
+        iconName:
+          type: string
+          description: Font Awesome icon class
+          example: "fa-brain"
+        iconColor:
+          type: string
+          description: Mã màu HEX của icon
+          example: "#d97757"
+        features:
+          type: array
+          items:
+            type: string
+          example: ["Cấp tài khoản dùng riêng", "Bảo hành full time"]
+        badgeText:
+          type: string
+          description: "Badge hiển thị trên card (ví dụ: -40%, HOT)"
+          example: "-40%"
+        badgeType:
+          type: string
+          enum: [discount, hot]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+          default: ACTIVE
+
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+        originalPrice:
+          type: number
+          format: double
+        category:
+          type: string
+        iconName:
+          type: string
+        iconColor:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        badgeText:
+          type: string
+        badgeType:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, OUT_OF_STOCK]
+        stockCount:
+          type: integer
+          description: Số tài khoản còn trong kho
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProductPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        currentPage:
+          type: integer
+        size:
+          type: integer
+
+    # ---- Orders ----
+    OrderCreateRequest:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: integer
+          format: int64
+          example: 1
+        quantity:
+          type: integer
+          minimum: 1
+          default: 1
+          example: 1
+        customerEmail:
+          type: string
+          format: email
+          description: Email nhận tài khoản (nếu không đăng nhập)
+          example: "buyer@gmail.com"
+
+    OrderCreateResponse:
+      type: object
+      properties:
+        orderCode:
+          type: string
+          description: Mã đơn hàng duy nhất
+          example: "PAY_PRO_abc123"
+        productName:
+          type: string
+          example: "Claude 3.5 Sonnet Pro"
+        amount:
+          type: number
+          format: double
+          description: Số tiền cần thanh toán
+          example: 299000
+        status:
+          type: string
+          enum: [PENDING]
+        paymentInfo:
+          $ref: '#/components/schemas/PaymentInfo'
+        expiresAt:
+          type: string
+          format: date-time
+          description: Thời gian hết hạn thanh toán (15 phút)
+
+    PaymentInfo:
+      type: object
+      description: Thông tin để hiển thị trên popup thanh toán
+      properties:
+        bankName:
+          type: string
+          example: "MB Bank"
+        accountNumber:
+          type: string
+          example: "0123456789"
+        accountHolder:
+          type: string
+          example: "NGUYEN VAN A"
+        transferContent:
+          type: string
+          description: Nội dung chuyển khoản (dùng để khớp webhook)
+          example: "PAY PRO abc123"
+        qrCodeUrl:
+          type: string
+          description: URL ảnh mã QR thanh toán
+          example: "https://img.vietqr.io/image/MB-0123456789-..."
+
+    OrderStatusResponse:
+      type: object
+      properties:
+        orderCode:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, SUCCESS, EXPIRED, REFUNDED]
+        amount:
+          type: number
+          format: double
+        productName:
+          type: string
+        deliveredAccount:
+          $ref: '#/components/schemas/DeliveredAccount'
+        createdAt:
+          type: string
+          format: date-time
+
+    DeliveredAccount:
+      type: object
+      description: Thông tin tài khoản đã cấp (chỉ có khi status = SUCCESS)
+      properties:
+        accountInfo:
+          type: string
+          description: "Thông tin tài khoản (email|password hoặc license key)"
+          example: "user123@gmail.com|P@ssw0rd!2026"
+        deliveredAt:
+          type: string
+          format: date-time
+
+    OrderPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderStatusResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        currentPage:
+          type: integer
+
+    # ---- Inventory ----
+    InventoryImportRequest:
+      type: object
+      required: [accounts]
+      properties:
+        accounts:
+          type: array
+          description: |
+            Danh sách tài khoản cần nhập.
+            Mỗi dòng là 1 tài khoản (email|password hoặc license key).
+          items:
+            type: string
+          example:
+            - "user1@gmail.com|Pass123!"
+            - "user2@gmail.com|Pass456!"
+            - "LICENSE-KEY-ABC-123"
+
+    InventoryImportResponse:
+      type: object
+      properties:
+        imported:
+          type: integer
+          description: Số tài khoản nhập thành công
+        duplicates:
+          type: integer
+          description: Số tài khoản bị trùng (bỏ qua)
+        totalStock:
+          type: integer
+          description: Tổng tài khoản còn trong kho sau khi nhập
+
+    InventoryListResponse:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+        productName:
+          type: string
+        totalStock:
+          type: integer
+        availableCount:
+          type: integer
+        soldCount:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryItem'
+
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        accountInfo:
+          type: string
+          description: Thông tin tài khoản (masked cho bảo mật)
+          example: "us***@gmail.com|P***"
+        status:
+          type: string
+          enum: [AVAILABLE, SOLD, RESERVED]
+        soldAt:
+          type: string
+          format: date-time
+        orderCode:
+          type: string
+          description: Mã đơn hàng đã mua (nếu SOLD)
+
+    # ---- Webhook ----
+    PaymentWebhookPayload:
+      type: object
+      description: |
+        Payload từ cổng thanh toán (SePay, Casso, ...).
+        Format có thể khác nhau tùy provider, đây là format chung.
+      properties:
+        id:
+          type: integer
+          description: ID giao dịch từ ngân hàng
+        gateway:
+          type: string
+          example: "MBBank"
+        transactionDate:
+          type: string
+          example: "2026-05-08 14:30:00"
+        accountNumber:
+          type: string
+          example: "0123456789"
+        transferType:
+          type: string
+          enum: [in, out]
+          description: "in = tiền vào, out = tiền ra"
+        transferAmount:
+          type: number
+          format: double
+          example: 299000
+        content:
+          type: string
+          description: Nội dung chuyển khoản (dùng để khớp orderCode)
+          example: "PAY PRO abc123"
+        referenceCode:
+          type: string
+          example: "FT26050812345"
+
+    # ---- Dashboard ----
+    DashboardStats:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+          format: double
+          description: Tổng doanh thu
+        totalOrders:
+          type: integer
+          description: Tổng đơn hàng
+        successOrders:
+          type: integer
+          description: Đơn hàng thành công
+        pendingOrders:
+          type: integer
+          description: Đơn hàng đang chờ
+        totalProducts:
+          type: integer
+          description: Tổng sản phẩm
+        totalInventory:
+          type: integer
+          description: Tổng tài khoản còn trong kho
+        revenueByDay:
+          type: array
+          description: Doanh thu 7 ngày gần nhất
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              revenue:
+                type: number
+                format: double
+              orderCount:
+                type: integer
+
+    # ---- Common ----
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
