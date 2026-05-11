@@ -1,20 +1,33 @@
 import React, { useState } from 'react';
 
 const ManageProducts: React.FC = () => {
-    const [products] = useState([
-        { id: 1, name: 'Tài khoản ChatGPT Plus', category: 'AI', price: '450,000đ', stock: 15, status: 'Còn hàng' },
-        { id: 2, name: 'Tài khoản Claude Pro', category: 'AI', price: '500,000đ', stock: 8, status: 'Còn hàng' },
-        { id: 3, name: 'Tài khoản Cursor Pro', category: 'Dev Tools', price: '400,000đ', stock: 0, status: 'Hết hàng' },
-        { id: 4, name: 'Key Windows 11 Pro', category: 'Software', price: '250,000đ', stock: 50, status: 'Còn hàng' },
-        { id: 5, name: 'Office 365 1 Năm', category: 'Software', price: '300,000đ', stock: 25, status: 'Còn hàng' },
+    const [products, setProducts] = useState([
+        { id: 1, name: 'FB Auto Poster Pro', category: 'Social Media', oldPrice: '1.000.000đ', price: '499.000đ', stock: 999, status: 'Còn hàng', badge: 'HOT', discount: '50%' },
+        { id: 2, name: 'Shopee Auto Checkout', category: 'Automation', oldPrice: '800.000đ', price: '399.000đ', stock: 999, status: 'Còn hàng', badge: 'NEW', discount: '50%' },
+        { id: 3, name: 'Tiktok Data Scraper', category: 'Data Scraping', oldPrice: '600.000đ', price: '299.000đ', stock: 999, status: 'Còn hàng', badge: '', discount: '50%' },
+        { id: 4, name: 'Tele Forwarder Bot', category: 'Social Media', oldPrice: '500.000đ', price: '249.000đ', stock: 999, status: 'Còn hàng', badge: 'BEST', discount: '50%' },
+        { id: 5, name: 'Email Bulk Sender', category: 'Marketing', oldPrice: '1.200.000đ', price: '599.000đ', stock: 999, status: 'Còn hàng', badge: '', discount: '50%' },
     ]);
+
+    const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
+    const [selectedProductForDiscount, setSelectedProductForDiscount] = useState<any>(null);
+
+    const openDiscountModal = (product: any) => {
+        setSelectedProductForDiscount(product);
+        setIsDiscountModalOpen(true);
+    };
+
+    const handleSaveDiscount = () => {
+        // Logic mô phỏng lưu giảm giá
+        setIsDiscountModalOpen(false);
+    };
 
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                 <div>
                     <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Quản lý Sản phẩm</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>Thêm, sửa, xóa các sản phẩm trong hệ thống.</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>Thêm, sửa, xóa phần mềm, cài đặt giảm giá và nhãn nổi bật.</p>
                 </div>
                 <button className="btn btn-primary">
                     <i className="fa-solid fa-plus"></i> Thêm sản phẩm mới
@@ -29,9 +42,9 @@ const ManageProducts: React.FC = () => {
                     </div>
                     <select className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: 'var(--radius-full)' }}>
                         <option>Tất cả danh mục</option>
-                        <option>AI</option>
-                        <option>Dev Tools</option>
-                        <option>Software</option>
+                        <option>Social Media</option>
+                        <option>Automation</option>
+                        <option>Data Scraping</option>
                     </select>
                 </div>
                 <table className="admin-table">
@@ -40,9 +53,9 @@ const ManageProducts: React.FC = () => {
                             <th>ID</th>
                             <th>Tên sản phẩm</th>
                             <th>Danh mục</th>
+                            <th>Giá gốc</th>
                             <th>Giá bán</th>
-                            <th>Tồn kho</th>
-                            <th>Trạng thái</th>
+                            <th>Nhãn (Badge)</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -52,15 +65,20 @@ const ManageProducts: React.FC = () => {
                                 <td>#{product.id}</td>
                                 <td style={{ fontWeight: 500 }}>{product.name}</td>
                                 <td>{product.category}</td>
-                                <td>{product.price}</td>
-                                <td>{product.stock}</td>
+                                <td style={{ textDecoration: 'line-through', color: 'var(--text-muted)' }}>{product.oldPrice}</td>
+                                <td style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>{product.price}</td>
                                 <td>
-                                    <span className={`status-badge ${product.stock > 0 ? 'success' : 'danger'}`}>
-                                        {product.status}
-                                    </span>
+                                    {product.badge ? (
+                                        <span className="badge" style={{ background: 'var(--primary-color)', color: '#fff', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>
+                                            {product.badge}
+                                        </span>
+                                    ) : (
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Không có</span>
+                                    )}
                                 </td>
                                 <td>
                                     <div className="action-btns">
+                                        <button className="action-btn" title="Cài đặt giảm giá" onClick={() => openDiscountModal(product)}><i className="fa-solid fa-tags"></i></button>
                                         <button className="action-btn" title="Chỉnh sửa"><i className="fa-solid fa-pen"></i></button>
                                         <button className="action-btn delete" title="Xóa"><i className="fa-solid fa-trash"></i></button>
                                     </div>
@@ -77,6 +95,45 @@ const ManageProducts: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal Cài đặt giảm giá (Flash Sale) */}
+            {isDiscountModalOpen && selectedProductForDiscount && (
+                <div className="modal-overlay" onClick={() => setIsDiscountModalOpen(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+                        <div className="modal-header">
+                            <h3>Cài đặt giảm giá</h3>
+                            <button className="icon-btn" onClick={() => setIsDiscountModalOpen(false)}>
+                                <i className="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div style={{ padding: '12px', background: 'var(--bg-base)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                                <p style={{ margin: 0, fontWeight: 500 }}>{selectedProductForDiscount.name}</p>
+                                <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Giá hiện tại: {selectedProductForDiscount.price}</p>
+                            </div>
+                            
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Giảm giá theo %</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <input type="number" className="checkout-input" placeholder="Ví dụ: 20" defaultValue={selectedProductForDiscount.discount?.replace('%', '')} />
+                                    <span style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>%</span>
+                                </div>
+                            </div>
+                            
+                            <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>- HOẶC -</div>
+                            
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Nhập giá khuyến mãi mới (đ)</label>
+                                <input type="text" className="checkout-input" placeholder="Nhập giá mới..." />
+                            </div>
+                        </div>
+                        <div className="modal-footer" style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                            <button className="btn btn-secondary" onClick={() => setIsDiscountModalOpen(false)}>Hủy</button>
+                            <button className="btn btn-primary" onClick={handleSaveDiscount}>Áp dụng giảm giá</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

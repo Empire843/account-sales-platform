@@ -19,6 +19,9 @@ import ManageProducts from './pages/admin/ManageProducts';
 import ManageOrders from './pages/admin/ManageOrders';
 import ManageUsers from './pages/admin/ManageUsers';
 import ManageBlog from './pages/admin/ManageBlog';
+import ManageCategories from './pages/admin/ManageCategories';
+import ManageCoupons from './pages/admin/ManageCoupons';
+import ProductStats from './pages/admin/ProductStats';
 import './index.css';
 
 function App() {
@@ -87,8 +90,11 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardOverview />} />
           <Route path="products" element={<ManageProducts />} />
+          <Route path="categories" element={<ManageCategories />} />
+          <Route path="stats" element={<ProductStats />} />
           <Route path="orders" element={<ManageOrders />} />
           <Route path="users" element={<ManageUsers />} />
+          <Route path="coupons" element={<ManageCoupons />} />
           <Route path="blog" element={<ManageBlog />} />
         </Route>
 

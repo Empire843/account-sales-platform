@@ -3,50 +3,50 @@ import React, { useState } from 'react';
 const products = [
   {
     id: 1,
-    name: "Claude 3.5 Sonnet Pro",
-    category: "ai dev",
-    iconClass: "claude",
-    iconName: "fa-brain",
-    desc: "Trải nghiệm AI mạnh mẽ nhất cho lập trình và phân tích dữ liệu.",
+    name: "FB Auto Poster Pro",
+    category: "social",
+    iconClass: "facebook",
+    iconName: "fa-facebook",
+    desc: "Công cụ đăng bài tự động hàng loạt lên các hội nhóm Facebook.",
     features: [
-      "Cấp tài khoản dùng riêng",
-      "Bảo hành full time",
-      "Giới hạn 500 msg/ngày"
+      "Đăng bài không giới hạn",
+      "Hỗ trợ nhiều tài khoản",
+      "License 1 năm"
     ],
-    oldPrice: "500.000đ",
-    price: "299.000đ",
-    badge: { text: "-40%", type: "discount" }
+    oldPrice: "1.000.000đ",
+    price: "499.000đ",
+    badge: { text: "-50%", type: "discount" }
   },
   {
     id: 2,
-    name: "Cursor Editor Pro",
-    category: "ai dev",
-    iconClass: "cursor",
-    iconName: "fa-terminal",
-    desc: "Code editor AI đỉnh cao, tiết kiệm 50% thời gian code của bạn.",
+    name: "Shopee Auto Checkout",
+    category: "automation",
+    iconClass: "shopee",
+    iconName: "fa-cart-shopping",
+    desc: "Phần mềm săn sale Shopee, tự động thêm vào giỏ và thanh toán siêu tốc.",
     features: [
-      "Fast requests không giới hạn",
-      "Tích hợp Claude 3.5 & GPT-4o",
-      "Dùng trên 2 thiết bị"
+      "Vượt captcha tự động",
+      "Hỗ trợ nhiều API",
+      "License 1 năm"
     ],
-    oldPrice: "450.000đ",
-    price: "249.000đ",
+    oldPrice: "800.000đ",
+    price: "399.000đ",
     badge: { text: "HOT", type: "hot" }
   },
   {
     id: 3,
-    name: "ChatGPT Plus (Cấp API)",
-    category: "ai",
-    iconClass: "chatgpt",
-    iconName: "fa-comment-dots",
-    desc: "Bao gồm GPT-4o, DALL-E 3 và Advanced Data Analysis.",
+    name: "Tiktok Data Scraper",
+    category: "data",
+    iconClass: "tiktok",
+    iconName: "fa-tiktok",
+    desc: "Cào dữ liệu video, bình luận, và thông tin người dùng từ Tiktok.",
     features: [
-      "Tài khoản chính chủ",
-      "Nạp qua thẻ tín dụng ảo",
-      "Không lo block IP"
+      "Xuất file Excel/CSV",
+      "Tốc độ quét cao",
+      "Cập nhật miễn phí"
     ],
-    oldPrice: "550.000đ",
-    price: "480.000đ"
+    oldPrice: "600.000đ",
+    price: "299.000đ"
   }
 ];
 
@@ -69,9 +69,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onBuy, onAddToCart }) => {
                 <h2>Sản phẩm nổi bật</h2>
                 <div className="filter-tabs">
                     <button className={`tab-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>Tất cả</button>
-                    <button className={`tab-btn ${filter === 'ai' ? 'active' : ''}`} onClick={() => setFilter('ai')}>AI Tools</button>
-                    <button className={`tab-btn ${filter === 'dev' ? 'active' : ''}`} onClick={() => setFilter('dev')}>Developer</button>
-                    <button className={`tab-btn ${filter === 'design' ? 'active' : ''}`} onClick={() => setFilter('design')}>Design</button>
+                    <button className={`tab-btn ${filter === 'social' ? 'active' : ''}`} onClick={() => setFilter('social')}>Social Media</button>
+                    <button className={`tab-btn ${filter === 'automation' ? 'active' : ''}`} onClick={() => setFilter('automation')}>Automation</button>
+                    <button className={`tab-btn ${filter === 'data' ? 'active' : ''}`} onClick={() => setFilter('data')}>Data Scraping</button>
                 </div>
             </div>
 

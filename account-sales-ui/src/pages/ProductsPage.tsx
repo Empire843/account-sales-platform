@@ -3,107 +3,72 @@ import React, { useState } from 'react';
 const allProducts = [
   {
     id: 1,
-    name: "Claude 3.5 Sonnet Pro",
-    category: "ai dev",
-    iconClass: "claude",
-    iconName: "fa-brain",
-    desc: "Trải nghiệm AI mạnh mẽ nhất cho lập trình và phân tích dữ liệu.",
-    features: ["Cấp tài khoản dùng riêng", "Bảo hành full time", "Giới hạn 500 msg/ngày"],
-    oldPrice: "500.000đ",
-    price: "299.000đ",
-    badge: { text: "-40%", type: "discount" }
+    name: "FB Auto Poster Pro",
+    category: "social",
+    iconClass: "facebook",
+    iconName: "fa-facebook",
+    desc: "Công cụ đăng bài tự động hàng loạt lên các hội nhóm Facebook.",
+    features: ["Đăng bài không giới hạn", "Hỗ trợ nhiều tài khoản", "License 1 năm"],
+    oldPrice: "1.000.000đ",
+    price: "499.000đ",
+    badge: { text: "-50%", type: "discount" }
   },
   {
     id: 2,
-    name: "Cursor Editor Pro",
-    category: "ai dev",
-    iconClass: "cursor",
-    iconName: "fa-terminal",
-    desc: "Code editor AI đỉnh cao, tiết kiệm 50% thời gian code của bạn.",
-    features: ["Fast requests không giới hạn", "Tích hợp Claude 3.5 & GPT-4o", "Dùng trên 2 thiết bị"],
-    oldPrice: "450.000đ",
-    price: "249.000đ",
+    name: "Shopee Auto Checkout",
+    category: "automation",
+    iconClass: "shopee",
+    iconName: "fa-cart-shopping",
+    desc: "Phần mềm săn sale Shopee, tự động thêm vào giỏ và thanh toán siêu tốc.",
+    features: ["Vượt captcha tự động", "Hỗ trợ nhiều API", "License 1 năm"],
+    oldPrice: "800.000đ",
+    price: "399.000đ",
     badge: { text: "HOT", type: "hot" }
   },
   {
     id: 3,
-    name: "ChatGPT Plus (Cấp API)",
-    category: "ai",
-    iconClass: "chatgpt",
-    iconName: "fa-comment-dots",
-    desc: "Bao gồm GPT-4o, DALL-E 3 và Advanced Data Analysis.",
-    features: ["Tài khoản chính chủ", "Nạp qua thẻ tín dụng ảo", "Không lo block IP"],
-    oldPrice: "550.000đ",
-    price: "480.000đ"
+    name: "Tiktok Data Scraper",
+    category: "data",
+    iconClass: "tiktok",
+    iconName: "fa-tiktok",
+    desc: "Cào dữ liệu video, bình luận, và thông tin người dùng từ Tiktok.",
+    features: ["Xuất file Excel/CSV", "Tốc độ quét cao", "Cập nhật miễn phí"],
+    oldPrice: "600.000đ",
+    price: "299.000đ"
   },
   {
     id: 4,
-    name: "Figma Professional",
-    category: "design",
-    iconClass: "figma",
-    iconName: "fa-pen-nib",
-    desc: "Công cụ thiết kế UI/UX chuyên nghiệp, cộng tác theo thời gian thực.",
-    features: ["Unlimited projects", "Team collaboration", "Dev mode access"],
-    oldPrice: "350.000đ",
-    price: "199.000đ",
-    badge: { text: "-43%", type: "discount" }
-  },
-  {
-    id: 5,
-    name: "GitHub Copilot Business",
-    category: "dev",
-    iconClass: "github",
-    iconName: "fa-code",
-    desc: "AI pair programmer từ GitHub, hỗ trợ viết code thông minh.",
-    features: ["Code completions real-time", "Chat trong IDE", "Hỗ trợ 20+ ngôn ngữ"],
-    oldPrice: "400.000đ",
-    price: "279.000đ",
+    name: "Tele Forwarder Bot",
+    category: "social",
+    iconClass: "telegram",
+    iconName: "fa-paper-plane",
+    desc: "Tự động copy tin nhắn từ nhiều group Telegram sang group của bạn.",
+    features: ["Lọc từ khóa thông minh", "Không cần quyền Admin", "License Vĩnh viễn"],
+    oldPrice: "500.000đ",
+    price: "249.000đ",
     badge: { text: "NEW", type: "hot" }
   },
   {
-    id: 6,
-    name: "Canva Pro",
-    category: "design",
-    iconClass: "canva",
-    iconName: "fa-palette",
-    desc: "Thiết kế đồ họa dễ dàng với hàng triệu template chuyên nghiệp.",
-    features: ["100GB cloud storage", "Brand Kit", "Background Remover"],
-    oldPrice: "300.000đ",
-    price: "149.000đ"
-  },
-  {
-    id: 7,
-    name: "Notion AI Plus",
-    category: "ai",
-    iconClass: "notion",
-    iconName: "fa-file-lines",
-    desc: "Workspace all-in-one với AI tích hợp, quản lý công việc hiệu quả.",
-    features: ["AI writing assistant", "Unlimited blocks", "Advanced analytics"],
-    oldPrice: "280.000đ",
-    price: "179.000đ"
-  },
-  {
-    id: 8,
-    name: "JetBrains All Products",
-    category: "dev",
-    iconClass: "jetbrains",
-    iconName: "fa-laptop-code",
-    desc: "Trọn bộ IDE chuyên nghiệp: IntelliJ, WebStorm, PyCharm, DataGrip...",
-    features: ["All IDEs included", "License key chính chủ", "Update 1 năm"],
+    id: 5,
+    name: "Email Bulk Sender",
+    category: "marketing",
+    iconClass: "email",
+    iconName: "fa-envelope",
+    desc: "Phần mềm gửi email hàng loạt không bị vào mục Spam.",
+    features: ["Hỗ trợ nhiều SMTP", "Quản lý chiến dịch", "Tích hợp AI viết thư"],
     oldPrice: "1.200.000đ",
-    price: "799.000đ",
-    badge: { text: "BEST", type: "hot" }
+    price: "599.000đ"
   },
   {
-    id: 9,
-    name: "Midjourney Standard",
-    category: "ai design",
-    iconClass: "midjourney",
-    iconName: "fa-image",
-    desc: "Tạo hình ảnh AI chất lượng cao, phong cách nghệ thuật độc đáo.",
-    features: ["15h fast GPU/tháng", "Unlimited relaxed GPU", "Commercial usage"],
-    oldPrice: "600.000đ",
-    price: "399.000đ"
+    id: 6,
+    name: "Zalo Auto Care",
+    category: "social",
+    iconClass: "zalo",
+    iconName: "fa-comment",
+    desc: "Tự động gửi tin nhắn chăm sóc khách hàng trên Zalo.",
+    features: ["Gửi tin nhắn kèm ảnh", "Hẹn giờ gửi tin", "License 6 tháng"],
+    oldPrice: "400.000đ",
+    price: "199.000đ"
   }
 ];
 
@@ -143,7 +108,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ onBuy, onAddToCart }) => {
       <div className="container">
         <div className="page-hero">
           <h1>Tất cả <span className="text-gradient">Sản phẩm</span></h1>
-          <p>Khám phá bộ sưu tập tài khoản premium đa dạng với giá tốt nhất thị trường</p>
+          <p>Khám phá bộ sưu tập công cụ tự động hóa đa dạng giúp tối ưu quy trình làm việc</p>
         </div>
 
         <div className="products-toolbar">
@@ -158,13 +123,13 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ onBuy, onAddToCart }) => {
           </div>
           <div className="toolbar-right">
             <div className="filter-tabs">
-              {['all', 'ai', 'dev', 'design'].map(cat => (
+              {['all', 'social', 'automation', 'data'].map(cat => (
                 <button
                   key={cat}
                   className={`tab-btn ${filter === cat ? 'active' : ''}`}
                   onClick={() => setFilter(cat)}
                 >
-                  {cat === 'all' ? 'Tất cả' : cat === 'ai' ? 'AI Tools' : cat === 'dev' ? 'Developer' : 'Design'}
+                  {cat === 'all' ? 'Tất cả' : cat === 'social' ? 'Social Media' : cat === 'automation' ? 'Automation' : 'Data Scraping'}
                 </button>
               ))}
             </div>

@@ -10,8 +10,8 @@ const Hero: React.FC = () => {
                 <div className="badge-pill">
                     <i className="fa-solid fa-shield-halved"></i> 100% Bảo hành 1-đổi-1
                 </div>
-                <h1>Giải pháp <span className="text-gradient">Tài khoản Premium</span> tối ưu cho bạn</h1>
-                <p>Nâng cao hiệu suất công việc với các công cụ AI hàng đầu thế giới. Giao dịch tự động, nhận tài khoản ngay sau 3s.</p>
+                <h1>Giải pháp <span className="text-gradient">Công cụ Tự Động Hóa</span> tối ưu cho bạn</h1>
+                <p>Nâng cao hiệu suất công việc với các phần mềm chuyên nghiệp. Tự động nhận License key và file cài đặt ngay sau khi thanh toán thành công.</p>
                 <div className="hero-actions">
                     <a href="#products" className="btn btn-primary btn-lg">Khám phá ngay</a>
                     <a href="#" className="btn btn-secondary btn-lg">

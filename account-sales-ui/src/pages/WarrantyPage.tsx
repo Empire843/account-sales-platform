@@ -2,24 +2,24 @@ import React, { useState } from 'react';
 
 const faqs = [
   {
-    q: "Tài khoản bị lỗi đăng nhập thì sao?",
-    a: "Bạn liên hệ với chúng tôi qua Telegram hoặc Email kèm mã đơn hàng. Chúng tôi sẽ kiểm tra và cấp lại tài khoản mới trong vòng 30 phút."
+    q: "Phần mềm/Tool bị lỗi không chạy được thì sao?",
+    a: "Bạn liên hệ với chúng tôi qua Telegram hoặc Email kèm mã đơn hàng. Chúng tôi sẽ kiểm tra và hỗ trợ fix lỗi qua Ultraviewer/AnyDesk hoặc cập nhật phiên bản mới trong vòng 30 phút."
   },
   {
     q: "Thời gian bảo hành là bao lâu?",
-    a: "Tất cả sản phẩm đều được bảo hành trọn thời gian sử dụng (theo gói đã mua). Nếu tài khoản hết hạn trước thời gian cam kết, bạn sẽ được đổi mới miễn phí."
+    a: "Tất cả sản phẩm đều được bảo hành trọn thời gian sử dụng (theo gói License đã mua). Nếu phần mềm dừng hoạt động do update nền tảng (Facebook, Shopee...), bạn sẽ được update miễn phí."
   },
   {
     q: "Tôi có thể được hoàn tiền không?",
-    a: "Có. Nếu chúng tôi không thể cấp lại tài khoản thay thế trong vòng 24 giờ kể từ khi bạn báo lỗi, bạn sẽ được hoàn tiền 100% qua phương thức thanh toán ban đầu."
+    a: "Có. Nếu chúng tôi không thể fix lỗi phần mềm trong vòng 24 giờ kể từ khi bạn báo lỗi, bạn sẽ được hoàn tiền 100% qua phương thức thanh toán ban đầu."
   },
   {
     q: "Quy trình bảo hành như thế nào?",
-    a: "Bước 1: Gửi mã đơn hàng + mô tả lỗi qua kênh hỗ trợ. Bước 2: Đội ngũ xác minh (tối đa 30 phút). Bước 3: Cấp tài khoản mới hoặc hoàn tiền."
+    a: "Bước 1: Gửi mã đơn hàng + mô tả lỗi qua kênh hỗ trợ. Bước 2: Đội ngũ kỹ thuật xác minh qua Ultraviewer (tối đa 30 phút). Bước 3: Fix lỗi hoặc hoàn tiền."
   },
   {
-    q: "Tài khoản có bị chia sẻ với người khác không?",
-    a: "Không. Tất cả tài khoản đều là tài khoản riêng, không chia sẻ. Bạn là người dùng duy nhất của tài khoản đó."
+    q: "Tôi có thể cài đặt phần mềm trên nhiều máy tính không?",
+    a: "Điều này phụ thuộc vào gói License bạn mua. Mặc định 1 License Key chỉ sử dụng cho 1 máy tính (1 Hardware ID). Nếu muốn dùng nhiều máy, bạn cần mua gói nâng cấp."
   }
 ];
 
@@ -40,15 +40,15 @@ const WarrantyPage: React.FC = () => {
             <div className="highlight-icon">
               <i className="fa-solid fa-shield-halved"></i>
             </div>
-            <h3>Bảo hành 1-đổi-1</h3>
-            <p>Tài khoản lỗi được thay thế miễn phí, không hỏi nhiều, không phiền phức.</p>
+            <h3>Bảo hành Update</h3>
+            <p>Phần mềm lỗi do nền tảng đổi thuật toán được fix miễn phí nhanh chóng.</p>
           </div>
           <div className="highlight-card">
             <div className="highlight-icon refund">
               <i className="fa-solid fa-money-bill-transfer"></i>
             </div>
             <h3>Hoàn tiền 100%</h3>
-            <p>Không cấp lại được trong 24h? Hoàn tiền đầy đủ, không giữ lại đồng nào.</p>
+            <p>Không fix được lỗi nghiêm trọng trong 24h? Hoàn tiền đầy đủ, uy tín.</p>
           </div>
           <div className="highlight-card">
             <div className="highlight-icon support">
@@ -80,15 +80,15 @@ const WarrantyPage: React.FC = () => {
             <div className="process-step">
               <div className="step-circle">2</div>
               <div className="step-content">
-                <h4>Xác minh thông tin</h4>
-                <p>Chúng tôi xác minh đơn hàng và kiểm tra tình trạng tài khoản (tối đa 30 phút).</p>
+                <h4>Xác minh lỗi</h4>
+                <p>Kỹ thuật viên sẽ xác minh đơn hàng và kiểm tra lỗi phần mềm trực tiếp (tối đa 30 phút).</p>
               </div>
             </div>
             <div className="process-step">
               <div className="step-circle">3</div>
               <div className="step-content">
                 <h4>Giải quyết</h4>
-                <p>Cấp tài khoản mới hoặc hoàn tiền toàn bộ nếu không thể thay thế.</p>
+                <p>Cập nhật phiên bản mới hoặc hoàn tiền toàn bộ nếu không thể fix lỗi.</p>
               </div>
             </div>
           </div>

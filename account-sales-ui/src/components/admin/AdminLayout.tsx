@@ -36,11 +36,20 @@ const AdminLayout: React.FC = () => {
                     <NavLink to="/admin/products" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
                         <i className="fa-solid fa-box"></i> Sản phẩm
                     </NavLink>
+                    <NavLink to="/admin/categories" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+                        <i className="fa-solid fa-tags"></i> Danh mục
+                    </NavLink>
                     <NavLink to="/admin/orders" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
                         <i className="fa-solid fa-shopping-cart"></i> Đơn hàng
                     </NavLink>
+                    <NavLink to="/admin/stats" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+                        <i className="fa-solid fa-chart-line"></i> Thống kê
+                    </NavLink>
                     <NavLink to="/admin/users" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
                         <i className="fa-solid fa-users"></i> Người dùng
+                    </NavLink>
+                    <NavLink to="/admin/coupons" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
+                        <i className="fa-solid fa-ticket-alt"></i> Khuyến mãi
                     </NavLink>
                     <NavLink to="/admin/blog" className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
                         <i className="fa-solid fa-newspaper"></i> Quản lý Blog
