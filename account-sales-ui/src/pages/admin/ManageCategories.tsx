@@ -46,7 +46,7 @@ const ManageCategories: React.FC = () => {
                                 <td><code>{category.slug}</code></td>
                                 <td>{category.description}</td>
                                 <td>
-                                    <span className="badge" style={{ background: 'var(--primary-color)', color: '#fff', padding: '4px 8px', borderRadius: '4px' }}>
+                                    <span style={{ background: 'var(--primary-color)', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 600, display: 'inline-block' }}>
                                         {category.productCount}
                                     </span>
                                 </td>

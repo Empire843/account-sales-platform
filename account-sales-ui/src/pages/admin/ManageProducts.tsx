@@ -69,7 +69,7 @@ const ManageProducts: React.FC = () => {
                                 <td style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>{product.price}</td>
                                 <td>
                                     {product.badge ? (
-                                        <span className="badge" style={{ background: 'var(--primary-color)', color: '#fff', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>
+                                        <span style={{ background: 'var(--primary-color)', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, display: 'inline-block' }}>
                                             {product.badge}
                                         </span>
                                     ) : (
